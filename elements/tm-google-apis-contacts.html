@@ -1,0 +1,54 @@
+
+<dom-module id="tm-google-apis-contacts">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <iron-ajax id="contacts"
+      auto
+      method="GET" url="[[_generateContactsUrl(accessToken)]]"
+      handle-as="json" on-response="_emailListResponse"
+      last-error="{{lastError}}" on-error="_errorOccured">
+    </iron-ajax>
+  </template>
+  <script>
+    (function(Polymer) {
+      Polymer({
+        is: 'tm-google-apis-contacts',
+        properties: {
+          accessToken: { type:String, notify:true },
+          contactList: { type: Array, notify: true },
+          lastError: { type: Object, notify: true }
+        },
+        observers: [
+          'debug(contactList)'
+        ],
+        _emailListResponse: function(response, a, b) {
+          console.log('GOOGLE TOOLS CONTACTS RESPONSE: ', response);
+          const entries = response.detail.__data__.response.feed.entry;
+          const contacts = entries.map(entry => ({
+            name: entry.gd$name.gd$fullName.$t,
+            email:(entry.gd$email.length === 0 ? '' : entry.gd$email["0"].address)
+          }));
+          this.set('contactList', contacts);
+        },
+        _generateContactsUrl(accessToken) {
+          var contactsUrl = "https://www.google.com/m8/feeds/contacts/default/thin?alt=json";
+          contactsUrl += "&access_token=" + accessToken + "&max-results=500&v=3.0";
+          return contactsUrl;
+        },
+        _errorOccured: function(error) {
+          console.log('GOOGLE TOOLS CONTACTS ERROR: ', error);
+        },
+        debug: function(object) {
+          console.log('DEBUG GOOGLE APIS CONTACTS: ', object);
+        },
+        ready: function() {
+          console.log('Element tm-google-apis-contacts has been created.');
+        }
+      });
+    })(window.Polymer);
+  </script>
+</dom-module>

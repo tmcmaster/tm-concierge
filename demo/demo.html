@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>tm-concierge demo</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../bower_components/polymer/polymer.html">
+
+    <link rel="import" href="../bower_components/iron-elements/iron-elements.html">
+    <link rel="import" href="../bower_components/paper-elements/paper-elements.html">
+    <link rel="import" href="../bower_components/tm-app-structure/tm-app-structure.html">
+    <link rel="import" href="../bower_components/paper-datatable/paper-datatable.html">
+    <link rel="import" href="../bower_components/paper-datatable/paper-datatable-column.html">
+    <link rel="import" href="../bower_components/google-signin/google-signin.html">
+
+    <link rel="import" href="../tm-concierge.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <tm-concierge></tm-concierge>
+      <!-- <tm-test></tm-test> -->
+    </div>
+  </body>
+</html>
+
+
+<dom-module id="tm-test">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <!-- 855037991978-st115k3cg2970431ir03t1bpossgj14f.apps.googleusercontent.com
+    tG6Cl2fb6SEZI-BuP5kmpXeW -->
+
+    <google-signin id="login" label-signin="Sign In"
+                   client-id="855037991978-st115k3cg2970431ir03t1bpossgj14f.apps.googleusercontent.com"
+                   scopes="https://www.googleapis.com/auth/drive.readonly"></google-signin>
+
+    <google-signin-aware
+      scopes="https://www.googleapis.com/auth/drive.readonly"
+      on-google-signin-aware-success="_handleSignin"
+      on-google-signin-offline-success="_handleOffline"
+      on-google-signin-aware-error="_signInError"></google-signin-aware>
+
+  </template>
+  <script>
+    (function(Polymer) {
+      Polymer({
+        is: 'tm-test',
+        properties: {
+          data: {
+            type:String,
+            notify:true
+          }
+        },
+        observers: [
+          'debug(data)'
+        ],
+        _handleSignin: function(response) {
+          console.log('_handleSignin');
+          // var user = gapi.auth2.getAuthInstance()['currentUser'].get();
+          // console.log('User name: ' + user.getBasicProfile().getName());
+        },
+        _handleOffline: function() {
+          console.log('_handleOffline');
+        },
+        _signIn: function() {
+          console.log('_signIn');
+          this.$.login.signIn();
+        },
+        _signOut: function() {
+          console.log('_signOut');
+          // this.$.login.signOut();
+        },
+        _signInError: function(a) {
+          console.log('SIGN IN ERROR: ', a);
+        },
+        debug: function(object) {
+          console.log(object);
+        },
+        ready: function() {
+          console.log('Element tm-test has been created.');
+        }
+      });
+    })(window.Polymer);
+  </script>
+</dom-module>

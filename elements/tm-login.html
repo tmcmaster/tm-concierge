@@ -1,0 +1,34 @@
+
+<dom-module id="tm-login">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h3>Authenticate with Google</h3>
+    <tm-google-apis-login access-token="{{accessToken}}"></tm-google-apis-login>
+  </template>
+  <script>
+    (function(Polymer) {
+      Polymer({
+        is: 'tm-login',
+        properties: {
+          accessToken: {
+            type:String,
+            notify:true
+          }
+        },
+        observers: [
+          'debug()'
+        ],
+        debug: function(object) {
+          console.log(object);
+        },
+        ready: function() {
+          console.log('Element tm-login has been created.');
+        }
+      });
+    })(window.Polymer);
+  </script>
+</dom-module>

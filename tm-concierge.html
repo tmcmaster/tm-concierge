@@ -1,0 +1,57 @@
+<!--
+`tm-concierge`
+
+
+@demo demo/index.html
+-->
+
+<link rel="import" href="elements.html">
+
+<dom-module id="tm-concierge">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+      tm-login, tm-parcel-register, tm-parcel-manage, tm-settings {
+        padding:40px;
+      }
+    </style>
+    <tm-google-apis-contacts access-token="[[accessToken]]"
+                             contact-list="{{contactList}}"></tm-google-apis-contacts>
+
+    <tm-local-storage id="storage"
+                     contact-list="{{contactList}}"
+                     parcel-list="{{parcelList}}"></tm-local-storage>
+
+    <tm-app-structure app-title="Concierge"
+                      titles="Login,Parcels List,Contact List,Settings"
+                      selected="0">
+
+      <tm-login access-token="{{accessToken}}" offline="{{offline}}"></tm-login>
+      <tm-parcels parcel-list="{{parcelList}}"></tm-parcels>
+      <tm-contacts contact-list="{{contactList}}"></tm-contacts>
+      <tm-settings></tm-settings>
+    </tm-app-structure>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'tm-concierge',
+      properties: {
+        offline: { type: Boolean, notify: true, value: false },
+        parcelList: { type: Array, notify: true, value: [
+          { type: 'letter' },
+          { type: 'parcel', size: 'large' }
+        ]},
+        contactList : { type: Array, notify: true, value: [
+          {name: 'aaa', email: 'aaa.bbb@ccc.com'},
+          {name: 'ddd', email: 'ddd.eee@fff.com'}
+        ] },
+      },
+      ready: function() {
+        console.log('Created tm-concierge.');
+      }
+    });
+  </script>
+</dom-module>

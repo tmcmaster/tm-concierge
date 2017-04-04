@@ -1,0 +1,38 @@
+<dom-module id="tm-contacts">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding:20px;
+      }
+    </style>
+    <tm-google-tools-contacts access-token="[[accessToken]]" contact-list="{{contactList}}"></tm-google-tools-contacts>
+    <h3>Manage Contacts</h3>
+    <paper-datatable data="{{contactList}}" selectable multi-selection>
+      <paper-datatable-column header="Name" property="name" sortable><template><span>[[value]]</span></template></paper-datatable-column>
+      <paper-datatable-column header="Email" property="email" sortable><template><span>[[value]]</span></template></paper-datatable-column>
+    </paper-datatable>
+  </template>
+  <script>
+    (function(Polymer) {
+      Polymer({
+        is: 'tm-contacts',
+        properties: {
+          contactList: { type:Array, notify:true },
+          accessToken: { type: String, notify: true }
+        },
+        observers: [
+          'debug(contactList)'
+        ],
+        debug: function(object) {
+          console.log('-- DEBUG CONTACTS: ', object);
+        },
+        ready: function() {
+          console.log('Element tm-contacts has been created.');
+
+
+        }
+      });
+    })(window.Polymer);
+  </script>
+</dom-module>

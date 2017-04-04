@@ -1,0 +1,64 @@
+<dom-module id="tm-local-storage">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <iron-localstorage id="storage"
+      name="tm-concierge"
+      value="{{storage}}"
+      on-iron-localstorage-load-empty="_initializeDefaults"
+      on-iron-localstorage-load="_storageLoaded">
+    </iron-localstorage>
+    <h3>Settings</h3>
+  </template>
+  <script>
+    (function(Polymer) {
+      Polymer({
+        is: 'tm-local-storage',
+        properties: {
+          parcelList: { type:Array, notify: true }
+          emailAdressList: { type:Array, notify: true },
+          storage: { type: Object, notify: true }
+        },
+        observers: [
+          'debug(emailAdressList)'
+        ],
+        debug: function(object) {
+          console.log('DEBUG: ', object);
+        },
+        _initializeDefaults: function() {
+          console.log('STORAGE: Initalising storage with defaults');
+          this.storage = {
+            'parcelList' : [],
+            'contactList' : []
+          };
+        },
+        _storageLoaded : function() {
+          console.log('STORAGE: Storage has been loaded.');
+          this.words = this.storage.emailAdressList;
+          if (this.storage.emailAdressList === undefined)
+          {
+            this.storage.parcelList = []
+            this.storage.contactList = []
+            this.save();
+          }
+        },
+        save : function() {
+          this.storage.parcelList = this.parcelList;
+          this.storage.contactList = this.contactList;
+          this.$.storage.save();
+        },
+        load : function() {
+          this.$.storage.reload();
+          this.emailAdressList = this.storage.emailAdressList;
+          this.contactList = this.storage.contactList;
+        },
+        ready: function() {
+          console.log('Element tm-local-storage has been created.');
+        }
+      });
+    })(window.Polymer);
+  </script>
+</dom-module>

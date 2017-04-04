@@ -1,0 +1,111 @@
+<!--
+    clientID: 855037991978-i0rvuu7utbdbk6ehnlhs11am8l2l2nar.apps.googleusercontent.com
+clientSecret: KAh_t3xwhk75WHDVDOdYfAA-
+-->
+
+
+<dom-module id="tm-google-apis-login">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <!-- <iron-ajax id="contacts"
+      method="GET" url="[[contactsUrl]]"
+      handle-as="json" on-response="[[_emailListResponse]]"
+      last-error="{{lastError}}" on-error="_errorOccured">
+    </iron-ajax> -->
+
+    <google-signin id="login" label-signin="Sign In"
+                   client-id="855037991978-i0rvuu7utbdbk6ehnlhs11am8l2l2nar.apps.googleusercontent.com"
+                   on-google-signed-out="_handleSignout"
+                   scopes="[[scopes]]"></google-signin>
+
+    <google-signin-aware
+      scopes="[[scopes]]"
+      on-google-signin-aware-success="_handleSignin"
+      on-google-signin-offline-success="_handleOffline"
+      on-google-signin-aware-error="_signInError"></google-signin-aware>
+
+    <!-- <paper-button raised on-tap="_signIn">Sign In</paper-button> -->
+    <!-- <paper-button raised on-tap="_signOut">Sign Out</paper-button> -->
+
+    <paper-input label="User Name" value="{{user.name}}" disable></paper-input>
+    <paper-input label="User Email" value="{{user.email}}" disable></paper-input>
+  </template>
+  <script>
+    (function(Polymer) {
+      const clientId = '807943157406-a8o2lnlf559tjccjrtpmtvaj25bmcb01.apps.googleusercontent.com';
+      //const clientSecret = 'KAh_t3xwhk75WHDVDOdYfAA-'
+      //const scope = 'https://www.googleapis.com/auth/contacts.readonly';
+
+      Polymer({
+        is: 'tm-google-apis-login',
+        properties: {
+          user: { type: Object, notify: true },
+          accessToken: { type: String, notify: true },
+          scopes: { type: String, notify: true, value: 'https://www.googleapis.com/auth/contacts.readonly' }
+          // contactsUrl: { type: String, notify: true },
+          // lastError: { type: Object, notify: true }
+        },
+        observers: [
+          'debug(accessToken)'
+        ],
+        // _emailListResponse: function(response) {
+        //   const entries = response.feed.entry;
+        //   const contacts = entries.map(entry => ({name: entry.gd$name.gd$fullName, email:entry.gd$email["0"]}));
+        // },
+        // _errorOccured: function(error) {
+        //   console.log('ERROR: ', error);
+        // },
+        _handleSignin: function(response) {
+          var currentUser = gapi.auth2.getAuthInstance()['currentUser'].get();
+          var profile = currentUser.getBasicProfile();
+          var username = profile.getName();
+          var coverImage = this.user && this.user.cover ? this.user.cover : null;
+
+          const user = {
+            id: profile.getId(),
+            name: profile.getName(),
+            profile: profile.getImageUrl(),
+            email: profile.getEmail(),
+            cover: coverImage
+          }
+          console.log('User name: ' + username);
+          this.set('user', user);
+
+          const self = this;
+          gapi.auth2.authorize({
+            client_id: clientId,
+            scope: self.scopes,
+            immediate: false
+          }, function(authorizationResult) {
+            if (authorizationResult && !authorizationResult.error) {
+              self.accessToken = authorizationResult.access_token;
+              console.log('ACCESS TOKEN: ', self.accessToken);
+            }
+          });
+        },
+        _handleSignout: function(response) {
+          console.log('Signed out: ', response);
+          this.set('user', undefined);
+        },
+        _handleOffline: function(response) {
+          console.log('Offline code received: ' + response.detail.code);
+        },
+        _signInError: function(a) {
+          console.log('SIGN IN ERROR: ', a);
+        },
+        debug: function(a,b) {
+          console.log('DEBUG OBJECT: ', a, b);
+        },
+        ready: function() {
+          console.log('Element tm-google-apis-login has been created.');
+        }
+      });
+
+    })(window.Polymer);
+  </script>
+</dom-module>

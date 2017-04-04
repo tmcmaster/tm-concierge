@@ -1,0 +1,48 @@
+<dom-module id="tm-parcels">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        padding:20px;
+      }
+    </style>
+    <h3>Parcels List</h3>
+    <paper-datatable data="{{parcelList}}" selectable multi-selection>
+      <paper-dropdown-menu label="Who is the package for">
+          <paper-listbox class="dropdown-content" selected="{{selectedPerson}}">
+            <template is="dom-repeat" items="[[emailAdressList]]" as="item">
+              <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      <paper-datatable-column header="Type" property="type" sortable><template><span>[[value]]</span></template></paper-datatable-column>
+      <paper-datatable-column header="Size" property="size" sortable><template><span>[[value]]</span></template></paper-datatable-column>
+    </paper-datatable>
+  </template>
+  <script>
+    (function(Polymer) {
+      Polymer({
+        is: 'tm-parcels',
+        properties: {
+          parcelList: {
+            type:Array,
+            notify:true
+          },
+          emailAdressList: {
+            type: Array,
+            notify: true
+          }
+        },
+        observers: [
+          'debug(parcelList)'
+        ],
+        debug: function(object) {
+          console.log('MANAGE PARCELS: ', object);
+        },
+        ready: function() {
+          console.log('Element tm-parcels has been created.');
+        }
+      });
+    })(window.Polymer);
+  </script>
+</dom-module>
