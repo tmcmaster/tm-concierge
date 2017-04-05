@@ -42,12 +42,16 @@
           console.log('EMAIL SENT RESPONSE: ', a);
         },
         _generateBody: function(to,from,subject,body) {
-          var body = "to: " + to + "\n";
-          body += "from: " + from + "\n";
-          body += "subject: " + subject + "\n\n";
-          body += body + "\n";
-          console.log('------ EMAIL BODY: ', body);
-          return body;
+          if (to === undefined || from === undefined || subject === undefined || body === undefined) {
+            return undefined;
+          } else {
+            var emailBody = "to: " + to + "\n";
+            emailBody += "from: " + from + "\n";
+            emailBody += "subject: " + subject + "\n\n";
+            emailBody += body + "\n";
+            console.log('====== EMAIL BODY: ', body);
+            return emailBody;            
+          }
         },
         _computeHeader: function(accessToken) {
           return {'Authorization': 'Bearer ' + accessToken}
