@@ -37,12 +37,13 @@
         },
         _storageLoaded : function() {
           console.log('STORAGE: Storage has been loaded.');
-          this.words = this.storage.emailAdressList;
-          if (this.storage.emailAdressList === undefined)
+          if (this.storage.parcelList === undefined)
           {
             this.storage.parcelList = []
+          }
+          if (this.storage.contactList === undefined)
+          {
             this.storage.contactList = []
-            this.save();
           }
         },
         save : function() {

@@ -3,7 +3,6 @@
 clientSecret: KAh_t3xwhk75WHDVDOdYfAA-
 -->
 
-
 <dom-module id="tm-google-apis-login">
   <template>
     <style>
@@ -18,8 +17,21 @@ clientSecret: KAh_t3xwhk75WHDVDOdYfAA-
       last-error="{{lastError}}" on-error="_errorOccured">
     </iron-ajax> -->
 
+    <!-- <iron-ajax id="ajax" auto
+          method="POST" url="[[_buildUrl(baseUrl,type,recordId)]]"
+          headers="[[_computeHeader(accessToken)]]"
+          handle-as="json" on-response="_handleResponse"></iron-ajax> -->
+
+    <iron-ajax id="send"
+          method="POST" url="https://www.googleapis.com/upload/gmail/v1/users/118208706565569278488/messages/send"
+          content-type="message/rfc822"
+          headers="[[_computeHeader(accessToken)]]"
+          body="[[_generateBody(accessToken)]]"
+          on-response="_sendEmailResponse">
+        </iron-ajax>
+
     <google-signin id="login" label-signin="Sign In"
-                   client-id="855037991978-i0rvuu7utbdbk6ehnlhs11am8l2l2nar.apps.googleusercontent.com"
+                   client-id="807943157406-a8o2lnlf559tjccjrtpmtvaj25bmcb01.apps.googleusercontent.com"
                    on-google-signed-out="_handleSignout"
                    scopes="[[scopes]]"></google-signin>
 
@@ -46,13 +58,32 @@ clientSecret: KAh_t3xwhk75WHDVDOdYfAA-
         properties: {
           user: { type: Object, notify: true },
           accessToken: { type: String, notify: true },
-          scopes: { type: String, notify: true, value: 'https://www.googleapis.com/auth/contacts.readonly' }
+          scopes: { type: String, notify: true,
+            value: 'https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/gmail.send' }
           // contactsUrl: { type: String, notify: true },
           // lastError: { type: Object, notify: true }
         },
         observers: [
-          'debug(accessToken)'
+          'debug(user)'
         ],
+        _computeHeader: function(accessToken) {
+          return {'Authorization': 'Bearer' + accessToken}
+        },
+        _sendEmailResponse: function(a) {
+          console.log('EMAIL SENT RESPONSE: ', a);
+        },
+        _generateBody: function() {
+          var body = "to: timmcm10@gmail.com\n";
+          body += "from: polymer.apitesting@gmail.com\n";
+          body += "subject: From test to tim\n\n";
+          body += "Some body text\n";
+          console.log('------ EMAIL BODY: ', body);
+          return body;
+          //return window.btoa(body);
+        },
+        _computeHeader: function(accessToken) {
+          return {'Authorization': 'Bearer ' + accessToken}
+        },
         // _emailListResponse: function(response) {
         //   const entries = response.feed.entry;
         //   const contacts = entries.map(entry => ({name: entry.gd$name.gd$fullName, email:entry.gd$email["0"]}));
@@ -76,6 +107,9 @@ clientSecret: KAh_t3xwhk75WHDVDOdYfAA-
           console.log('User name: ' + username);
           this.set('user', user);
 
+
+          //xhr.setRequestHeader('Authorization','Bearer ' + oauthToken.access_token);
+
           const self = this;
           gapi.auth2.authorize({
             client_id: clientId,
@@ -84,9 +118,24 @@ clientSecret: KAh_t3xwhk75WHDVDOdYfAA-
           }, function(authorizationResult) {
             if (authorizationResult && !authorizationResult.error) {
               self.accessToken = authorizationResult.access_token;
-              console.log('ACCESS TOKEN: ', self.accessToken);
+              console.log('-------------- ACCESS TOKEN: ', self.accessToken);
+              self.$.send.generateRequest();
             }
           });
+
+
+          // var sendRequest = gapi.client.gmail.users.messages.send({
+          //   'userId': 'me',
+          //   'resource': {
+          //     'raw': window.btoa('Some email body text')
+          //   }
+          // });
+          //
+          // var a = sendRequest.execute(function(a) {
+          //     console.log('CALLBACK', a);
+          // });
+          //
+          // console.log('SEND REQUEST: ', q);
         },
         _handleSignout: function(response) {
           console.log('Signed out: ', response);
@@ -99,7 +148,7 @@ clientSecret: KAh_t3xwhk75WHDVDOdYfAA-
           console.log('SIGN IN ERROR: ', a);
         },
         debug: function(a,b) {
-          console.log('DEBUG OBJECT: ', a, b);
+          console.log('==== DEBUG OBJECT: ', a, b);
         },
         ready: function() {
           console.log('Element tm-google-apis-login has been created.');

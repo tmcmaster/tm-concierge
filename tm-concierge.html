@@ -13,7 +13,7 @@
       :host {
         display: inline-block;
       }
-      tm-login, tm-parcel-register, tm-parcel-manage, tm-settings {
+      tm-login, tm-parcel-register, tm-parcel-manage, tm-email, tm-settings {
         padding:40px;
       }
     </style>
@@ -25,12 +25,13 @@
                      parcel-list="{{parcelList}}"></tm-local-storage>
 
     <tm-app-structure app-title="Concierge"
-                      titles="Login,Parcels List,Contact List,Settings"
+                      titles="Login,Parcels List,Contact List,Send Email,Settings"
                       selected="0">
 
-      <tm-login access-token="{{accessToken}}" offline="{{offline}}"></tm-login>
+      <tm-login access-token="{{accessToken}}" offline="{{offline}}" user="{{user}}"></tm-login>
       <tm-parcels parcel-list="{{parcelList}}"></tm-parcels>
       <tm-contacts contact-list="{{contactList}}"></tm-contacts>
+      <tm-email user-id="[[user.id]]" access-token="[[accessToken]]"></tm-email>
       <tm-settings></tm-settings>
     </tm-app-structure>
   </template>
@@ -39,6 +40,8 @@
     Polymer({
       is: 'tm-concierge',
       properties: {
+        user: { type: Object, notify: true },
+        accessToken: { type: String, notify: true },
         offline: { type: Boolean, notify: true, value: false },
         parcelList: { type: Array, notify: true, value: [
           { type: 'letter' },
@@ -48,6 +51,12 @@
           {name: 'aaa', email: 'aaa.bbb@ccc.com'},
           {name: 'ddd', email: 'ddd.eee@fff.com'}
         ] },
+      },
+      observers: [
+        '_debug(accessToken)'
+      ],
+      _debug: function(object) {
+        console.log('-=-=-=- DEBUG: ', object);
       },
       ready: function() {
         console.log('Created tm-concierge.');

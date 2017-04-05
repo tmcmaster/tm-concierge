@@ -7,7 +7,7 @@
       }
     </style>
     <h3>Authenticate with Google</h3>
-    <tm-google-apis-login access-token="{{accessToken}}"></tm-google-apis-login>
+    <tm-google-apis-login access-token="{{accessToken}}" user="{{user}}"></tm-google-apis-login>
   </template>
   <script>
     (function(Polymer) {
@@ -17,10 +17,14 @@
           accessToken: {
             type:String,
             notify:true
+          },
+          user: {
+            type: Object,
+            notify: true
           }
         },
         observers: [
-          'debug()'
+          'debug(user)'
         ],
         debug: function(object) {
           console.log(object);

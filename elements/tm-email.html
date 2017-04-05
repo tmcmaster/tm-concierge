@@ -1,0 +1,52 @@
+
+<dom-module id="tm-email">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+    </style>
+
+    <tm-google-apis-email id="email"
+                          access-token="[[accessToken]]"
+                          user-id="[[userId]]"
+                          to="[[to]]"
+                          from="[[from]]"
+                          subject="[[subject]]"
+                          body="[[body]]"></tm-google-apis-email>
+
+    <paper-input label="To" value="{{to}}"></paper-input>
+    <paper-input label="From" value="{{from}}"></paper-input>
+    <paper-input label="Subject" value="{{subject}}"></paper-input>
+    <paper-input label="Body" value="{{body}}"></paper-input>
+    <paper-button on-tap="_send" raised>Send</paper-button>
+
+  </template>
+  <script>
+    (function(Polymer) {
+      Polymer({
+        is: 'tm-email',
+        properties: {
+          userId: { type: String, notify: true },
+          accessToken: { type: String, notify: true },
+          to: { type: String, notify: true, value: 'timmcm10@gmail.com' },
+          from: { type: String, notify: true, value: 'polymer.apitesting@gmail.com' },
+          subject: { type: String, notify: true, value: 'From Polymer to me.' },
+          body: { type: String, notify: true, value: 'This is a test email from Polymer to me.' }
+        },
+        observers: [
+          '_debug(accessToken, userId, body)'
+        ],
+        _send: function() {
+          this.$.email.send();
+        },
+        debug: function(a,b,c) {
+          console.log('************ DEBUG TM-EMAIL:', a, b, c);
+        },
+        ready: function() {
+          console.log('Element tm-email has been created.');
+        }
+      });
+    })(window.Polymer);
+  </script>
+</dom-module>

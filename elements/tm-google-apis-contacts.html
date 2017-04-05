@@ -28,10 +28,7 @@
         _emailListResponse: function(response, a, b) {
           console.log('GOOGLE TOOLS CONTACTS RESPONSE: ', response);
           const entries = response.detail.__data__.response.feed.entry;
-          const contacts = entries.map(entry => ({
-            name: entry.gd$name.gd$fullName.$t,
-            email:(entry.gd$email.length === 0 ? '' : entry.gd$email["0"].address)
-          }));
+          const contacts = entries.map(entry => (parseContact(entry)));
           this.set('contactList', contacts);
         },
         _generateContactsUrl(accessToken) {
@@ -49,6 +46,12 @@
           console.log('Element tm-google-apis-contacts has been created.');
         }
       });
+      function parseContact(entry) {
+        const contact = {};
+        contact.name = (entry.gd$name !== undefined && entry.gd$name.gd$fullName !== undefined ? entry.gd$name.gd$fullName.$t : '' );
+        contact.email = (entry.gd$email !== undefined && entry.gd$email.length > 0 ? entry.gd$email["0"].address : '' );
+        return contact;
+      }
     })(window.Polymer);
   </script>
 </dom-module>
