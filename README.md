@@ -1,38 +1,16 @@
-# \<tm-concierge\>
+## tm-concierge
 
+Hi Cathy,
 
+Please follow the following instructions:
 
-## Install the Polymer-CLI
+1. git clone git@github.com:tmcmaster/tm-concierge.git
+2. cd tm-concierge
+3. bower update
+4. polymer serve
+5. open browser: http://localhost:8080/demo/demo.html
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
+Cheers,
+Tim  
 
-## Viewing Your Application
-
-```
-$ polymer serve
-```
-
-## Building Your Application
-
-```
-$ polymer build
-```
-
-This will create a `build/` folder with `bundled/` and `unbundled/` sub-folders
-containing a bundled (Vulcanized) and unbundled builds, both run through HTML,
-CSS, and JS optimizers.
-
-You can serve the built versions by giving `polymer serve` a folder to serve
-from:
-
-```
-$ polymer serve build/bundled
-```
-
-## Running Tests
-
-```
-$ polymer test
-```
-
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+;-)
