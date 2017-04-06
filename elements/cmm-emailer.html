@@ -26,13 +26,6 @@
       on-google-signin-offline-success="_handleOffline"
       on-google-signin-aware-error="_signInError"></google-signin-aware>
 
-
-    <paper-input label="To" value="{{to}}"></paper-input>
-    <paper-input label="From" value="{{from}}"></paper-input>
-    <paper-input label="Subject" value="{{subject}}"></paper-input>
-    <paper-input label="Body" value="{{body}}"></paper-input>
-    <paper-button on-tap="_sendEmail" raised>Send</paper-button>
-
   </template>
   <script>
     (function(Polymer) {
@@ -53,7 +46,7 @@
         observers: [
           'debug(user)'
         ],
-        _sendEmail: function() {
+        send: function() {
           this.$.send.generateRequest();
         },
         _computeHeader: function(accessToken) {

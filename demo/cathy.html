@@ -23,71 +23,52 @@
   </head>
   <body>
     <div class="vertical-section-container centered">
-      <cmm-emailer></cmm-emailer>
+      <cmm-test></cmm-test>
     </div>
   </body>
 </html>
 
 
-<dom-module id="tm-test">
+<dom-module id="cmm-test">
   <template>
     <style>
       :host {
         display: block;
       }
     </style>
+    <cmm-emailer id="emailer"
+                 to="[[to]]"
+                 from="[[from]]"
+                 subject="[[subject]]"
+                 body="[[body]]"></cmm-emailer>
 
-    <!-- 855037991978-st115k3cg2970431ir03t1bpossgj14f.apps.googleusercontent.com
-    tG6Cl2fb6SEZI-BuP5kmpXeW -->
-
-    <google-signin id="login" label-signin="Sign In"
-                   client-id="855037991978-st115k3cg2970431ir03t1bpossgj14f.apps.googleusercontent.com"
-                   scopes="https://www.googleapis.com/auth/drive.readonly"></google-signin>
-
-    <google-signin-aware
-      scopes="https://www.googleapis.com/auth/drive.readonly"
-      on-google-signin-aware-success="_handleSignin"
-      on-google-signin-offline-success="_handleOffline"
-      on-google-signin-aware-error="_signInError"></google-signin-aware>
-
+    <paper-input label="To" value="{{to}}"></paper-input>
+    <paper-input label="From" value="{{from}}"></paper-input>
+    <paper-input label="Subject" value="{{subject}}"></paper-input>
+    <paper-input label="Body" value="{{body}}"></paper-input>
+    <paper-button on-tap="_sendEmail" raised>Send</paper-button>
   </template>
   <script>
     (function(Polymer) {
       Polymer({
-        is: 'tm-test',
+        is: 'cmm-test',
         properties: {
-          data: {
-            type:String,
-            notify:true
-          }
+          to: { type: String, notify: true, value: 'timmcm10@gmail.com' },
+          from: { type: String, notify: true, value: 'polymer.apitesting@gmail.com' },
+          subject: { type: String, notify: true, value: 'From Polymer to me.' },
+          body: { type: String, notify: true, value: 'This is a test email from Polymer to me.' }
         },
         observers: [
-          'debug(data)'
+          'debug(to)'
         ],
-        _handleSignin: function(response) {
-          console.log('_handleSignin');
-          // var user = gapi.auth2.getAuthInstance()['currentUser'].get();
-          // console.log('User name: ' + user.getBasicProfile().getName());
-        },
-        _handleOffline: function() {
-          console.log('_handleOffline');
-        },
-        _signIn: function() {
-          console.log('_signIn');
-          this.$.login.signIn();
-        },
-        _signOut: function() {
-          console.log('_signOut');
-          // this.$.login.signOut();
-        },
-        _signInError: function(a) {
-          console.log('SIGN IN ERROR: ', a);
+        _sendEmail: function() {
+          this.$.emailer.send();
         },
         debug: function(object) {
-          console.log(object);
+          console.log('TEST: ', object);
         },
         ready: function() {
-          console.log('Element tm-test has been created.');
+          console.log('Element cmm-test has been created.');
         }
       });
     })(window.Polymer);
