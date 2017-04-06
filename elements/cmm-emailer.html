@@ -1,0 +1,124 @@
+
+<dom-module id="cmm-emailer">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <iron-ajax id="send"
+          method="POST" url="https://www.googleapis.com/upload/gmail/v1/users/118208706565569278488/messages/send"
+          content-type="message/rfc822"
+          headers="[[_computeHeader(accessToken)]]"
+          body="[[_generateBody(accessToken)]]"
+          on-response="_sendEmailResponse">
+        </iron-ajax>
+
+    <google-signin id="login" label-signin="Sign In"
+                   client-id="807943157406-a8o2lnlf559tjccjrtpmtvaj25bmcb01.apps.googleusercontent.com"
+                   on-google-signed-out="_handleSignout"
+                   scopes="[[scopes]]"></google-signin>
+
+    <google-signin-aware
+      scopes="[[scopes]]"
+      on-google-signin-aware-success="_handleSignin"
+      on-google-signin-offline-success="_handleOffline"
+      on-google-signin-aware-error="_signInError"></google-signin-aware>
+
+
+    <paper-input label="To" value="{{to}}"></paper-input>
+    <paper-input label="From" value="{{from}}"></paper-input>
+    <paper-input label="Subject" value="{{subject}}"></paper-input>
+    <paper-input label="Body" value="{{body}}"></paper-input>
+    <paper-button on-tap="_sendEmail" raised>Send</paper-button>
+
+  </template>
+  <script>
+    (function(Polymer) {
+      const clientId = '807943157406-a8o2lnlf559tjccjrtpmtvaj25bmcb01.apps.googleusercontent.com';
+
+
+      Polymer({
+        is: 'cmm-emailer',
+        properties: {
+          user: { type: Object, notify: true },
+          accessToken: { type:String, notify:true },
+          scopes: { type: String, notify: true, value: 'https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/gmail.send' },
+          to: { type: String, notify: true, value: 'timmcm10@gmail.com' },
+          from: { type: String, notify: true, value: 'polymer.apitesting@gmail.com' },
+          subject: { type: String, notify: true, value: 'From Polymer to me.' },
+          body: { type: String, notify: true, value: 'This is a test email from Polymer to me.' }
+        },
+        observers: [
+          'debug(user)'
+        ],
+        _sendEmail: function() {
+          this.$.send.generateRequest();
+        },
+        _computeHeader: function(accessToken) {
+          return {'Authorization': 'Bearer' + accessToken}
+        },
+        _sendEmailResponse: function(a) {
+          console.log('EMAIL SENT RESPONSE: ', a);
+        },
+        _generateBody: function() {
+          var body = "to: timmcm10@gmail.com\n";
+          body += "from: polymer.apitesting@gmail.com\n";
+          body += "subject: From test to tim\n\n";
+          body += "Some body text\n";
+          console.log('------ EMAIL BODY: ', body);
+          return body;
+        },
+        _computeHeader: function(accessToken) {
+          return {'Authorization': 'Bearer ' + accessToken}
+        },
+        _handleSignin: function(response) {
+          var currentUser = gapi.auth2.getAuthInstance()['currentUser'].get();
+          var profile = currentUser.getBasicProfile();
+          var username = profile.getName();
+          var coverImage = this.user && this.user.cover ? this.user.cover : null;
+
+          const user = {
+            id: profile.getId(),
+            name: profile.getName(),
+            profile: profile.getImageUrl(),
+            email: profile.getEmail(),
+            cover: coverImage
+          }
+          console.log('User name: ' + username);
+          this.set('user', user);
+
+          const self = this;
+          gapi.auth2.authorize({
+            client_id: clientId,
+            scope: self.scopes,
+            immediate: false
+          }, function(authorizationResult) {
+            if (authorizationResult && !authorizationResult.error) {
+              self.accessToken = authorizationResult.access_token;
+              console.log('-------------- ACCESS TOKEN: ', self.accessToken);
+              //self.$.send.generateRequest();
+            }
+          });
+        },
+        _handleSignout: function(response) {
+          console.log('Signed out: ', response);
+          this.set('user', undefined);
+        },
+        _handleOffline: function(response) {
+          console.log('Offline code received: ' + response.detail.code);
+        },
+        _signInError: function(a) {
+          console.log('SIGN IN ERROR: ', a);
+        },
+        debug: function(object) {
+          console.log('DEBUG CMM-EMAILER: '. object);
+        },
+        ready: function() {
+          console.log('Element cmm-emailer has been created.');
+        }
+      });
+    })(window.Polymer);
+  </script>
+</dom-module>

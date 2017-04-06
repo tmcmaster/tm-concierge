@@ -25,7 +25,7 @@
                      parcel-list="{{parcelList}}"></tm-local-storage>
 
     <tm-app-structure app-title="Concierge"
-                      titles="Login,Parcels List,Contact List,Send Email,Settings"
+                      titles="Login,Parcels List,Contact List,Send Email,Settings,Emailer"
                       selected="0">
 
       <tm-login access-token="{{accessToken}}" offline="{{offline}}" user="{{user}}"></tm-login>
@@ -33,6 +33,7 @@
       <tm-contacts contact-list="{{contactList}}"></tm-contacts>
       <tm-email user-id="[[user.id]]" access-token="[[accessToken]]"></tm-email>
       <tm-settings></tm-settings>
+      <cmm-emailer></cmm-emailer>
     </tm-app-structure>
   </template>
 
