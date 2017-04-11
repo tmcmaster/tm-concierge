@@ -8,7 +8,7 @@
     </style>
 
     <iron-ajax id="send"
-          method="POST" url="https://www.googleapis.com/upload/gmail/v1/users/118208706565569278488/messages/send"
+          method="POST" url="[[_generateSendEmailUrl(user.id)]]"
           content-type="message/rfc822"
           headers="[[_computeHeader(accessToken)]]"
           body="[[_generateBody(accessToken)]]"
@@ -16,7 +16,7 @@
         </iron-ajax>
 
     <google-signin id="login" label-signin="Sign In"
-                   client-id="807943157406-a8o2lnlf559tjccjrtpmtvaj25bmcb01.apps.googleusercontent.com"
+                   client-id="[[clientId]]"
                    on-google-signed-out="_handleSignout"
                    scopes="[[scopes]]"></google-signin>
 
@@ -29,19 +29,18 @@
   </template>
   <script>
     (function(Polymer) {
-      const clientId = '807943157406-a8o2lnlf559tjccjrtpmtvaj25bmcb01.apps.googleusercontent.com';
-
-
       Polymer({
         is: 'cmm-emailer',
         properties: {
+          clientId: { type: String, notify: true, value: '807943157406-a8o2lnlf559tjccjrtpmtvaj25bmcb01.apps.googleusercontent.com'},
           user: { type: Object, notify: true },
           accessToken: { type:String, notify:true },
           scopes: { type: String, notify: true, value: 'https://www.googleapis.com/auth/contacts.readonly https://www.googleapis.com/auth/gmail.send' },
           to: { type: String, notify: true, value: 'timmcm10@gmail.com' },
           from: { type: String, notify: true, value: 'polymer.apitesting@gmail.com' },
           subject: { type: String, notify: true, value: 'From Polymer to me.' },
-          body: { type: String, notify: true, value: 'This is a test email from Polymer to me.' }
+          body: { type: String, notify: true, value: 'This is a test email from Polymer to me.' },
+          status: { type: String, notify: true }
         },
         observers: [
           'debug(user)'
@@ -52,48 +51,42 @@
         _computeHeader: function(accessToken) {
           return {'Authorization': 'Bearer' + accessToken}
         },
-        _sendEmailResponse: function(a) {
-          console.log('EMAIL SENT RESPONSE: ', a);
+        _sendEmailResponse: function(response) {
+          console.log('EMAIL SENT RESPONSE: ', response);
+          const responseStatus = response.detail.__data__.status;
+          this.status = (responseStatus === 200 ? 'email sent' : 'email could not be sent.');
+        },
+        _generateSendEmailUrl: function(userId)  {
+          return 'https://www.googleapis.com/upload/gmail/v1/users/' + userId + '/messages/send';
         },
         _generateBody: function() {
-          var body = "to: timmcm10@gmail.com\n";
-          body += "from: polymer.apitesting@gmail.com\n";
-          body += "subject: From test to tim\n\n";
-          body += "Some body text\n";
+          var body = "to: " + this.to + "\n";
+          body += "from: " + this.from + "\n";
+          body += "subject: " + this.subject + "\n\n";
+          body += this.body + "\n";
           console.log('------ EMAIL BODY: ', body);
           return body;
         },
         _computeHeader: function(accessToken) {
           return {'Authorization': 'Bearer ' + accessToken}
         },
-        _handleSignin: function(response) {
+        _handleSignin: function(response,a,b) {
           var currentUser = gapi.auth2.getAuthInstance()['currentUser'].get();
           var profile = currentUser.getBasicProfile();
-          var username = profile.getName();
-          var coverImage = this.user && this.user.cover ? this.user.cover : null;
+          var accessToken = response.detail.access_token;
 
           const user = {
             id: profile.getId(),
             name: profile.getName(),
             profile: profile.getImageUrl(),
             email: profile.getEmail(),
-            cover: coverImage
+            cover: profile.getImageUrl()
           }
-          console.log('User name: ' + username);
-          this.set('user', user);
+          console.log('Access Token: ', accessToken);
+          console.log('User: ', user);
 
-          const self = this;
-          gapi.auth2.authorize({
-            client_id: clientId,
-            scope: self.scopes,
-            immediate: false
-          }, function(authorizationResult) {
-            if (authorizationResult && !authorizationResult.error) {
-              self.accessToken = authorizationResult.access_token;
-              console.log('-------------- ACCESS TOKEN: ', self.accessToken);
-              //self.$.send.generateRequest();
-            }
-          });
+          this.set('accessToken', accessToken);
+          this.set('user', user);
         },
         _handleSignout: function(response) {
           console.log('Signed out: ', response);

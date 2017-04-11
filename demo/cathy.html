@@ -40,13 +40,15 @@
                  to="[[to]]"
                  from="[[from]]"
                  subject="[[subject]]"
-                 body="[[body]]"></cmm-emailer>
+                 body="[[body]]"
+                 status="{{status}}"></cmm-emailer>
 
     <paper-input label="To" value="{{to}}"></paper-input>
     <paper-input label="From" value="{{from}}"></paper-input>
     <paper-input label="Subject" value="{{subject}}"></paper-input>
     <paper-input label="Body" value="{{body}}"></paper-input>
     <paper-button on-tap="_sendEmail" raised>Send</paper-button>
+    <span>[[status]]</span>
   </template>
   <script>
     (function(Polymer) {
@@ -56,7 +58,8 @@
           to: { type: String, notify: true, value: 'timmcm10@gmail.com' },
           from: { type: String, notify: true, value: 'polymer.apitesting@gmail.com' },
           subject: { type: String, notify: true, value: 'From Polymer to me.' },
-          body: { type: String, notify: true, value: 'This is a test email from Polymer to me.' }
+          body: { type: String, notify: true, value: 'This is a test email from Polymer to me.' },
+          status: { type: String, notify: true, value: '' }
         },
         observers: [
           'debug(to)'
